@@ -37,24 +37,22 @@ class MainActivity : AppCompatActivity() {
         }
 
         percentage.setOnClickListener {
-            if (numberList.isEmpty() && operatorList.isEmpty()) {
-                try {
-                    val n = cNumber.toDouble()
-                    cNumber = (n / 100).toString()
-                    formula.text = cNumber
-                } catch (e: Exception) { formula.text = "Error" }
-            }
+            equalOnClickListener().onClick(it)
+            try {
+                val n = cNumber.toDouble()
+                cNumber = (n / 100).toString()
+                formula.text = cNumber
+            } catch (e: Exception) { formula.text = "Error" }
         }
 
         sign.setOnClickListener {
-            if (numberList.isEmpty() && operatorList.isEmpty()) {
-                if (cNumber.first() == '-') {
-                    formula.text = formula.text.substring(1)
-                    cNumber = cNumber.substring(1)
-                } else {
-                    formula.text = "-${formula.text}"
-                    cNumber = "-$cNumber"
-                }
+            equalOnClickListener().onClick(it)
+            if (cNumber.first() == '-') {
+                formula.text = formula.text.substring(1)
+                cNumber = cNumber.substring(1)
+            } else {
+                formula.text = "-${formula.text}"
+                cNumber = "-$cNumber"
             }
         }
 
@@ -83,17 +81,7 @@ class MainActivity : AppCompatActivity() {
             cNumber = ""
         }
 
-        equal.setOnClickListener {
-            formula.text = "${formula.text}="
-            addNumList(cNumber)
-            val result = calculate().let {
-                if (it == it.toLong().toDouble()) "${it.toLong()}" else "$it"
-            }
-            formula.text = result
-            cNumber = result
-            numberList.clear()
-            operatorList.clear()
-        }
+        equal.setOnClickListener(equalOnClickListener())
 
         all_clear.setOnClickListener {
             formula.text = ""
@@ -106,6 +94,17 @@ class MainActivity : AppCompatActivity() {
     private fun addNumber(n: String) = View.OnClickListener {
         formula.text = "${formula.text}$n"
         cNumber = "$cNumber$n"
+    }
+
+    private fun equalOnClickListener() = View.OnClickListener {
+        addNumList(cNumber)
+        val result = calculate().let {
+            if (it == it.toLong().toDouble()) "${it.toLong()}" else "$it"
+        }
+        formula.text = result
+        cNumber = result
+        numberList.clear()
+        operatorList.clear()
     }
 
     private fun addNumList(str: String) {
